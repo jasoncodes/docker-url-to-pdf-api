@@ -1,0 +1,17 @@
+#!/bin/bash
+set -eou pipefail
+
+SELF_SHORTHASH="$(git rev-parse --short HEAD)"
+APP_SHORTHASH="$(docker run --rm "$IMAGE_NAME" git rev-parse --short HEAD)"
+CHROMIUM_VERSION="$(docker run --rm "$IMAGE_NAME" find node_modules/puppeteer/.local-chromium -executable -name chrome -exec {} --version \;)"
+
+if ! echo "$CHROMIUM_VERSION" | egrep -q '^Chromium [0-9\.]+ *$'; then
+  echo "Failed to detect Chromium version: $CHROMIUM_VERSION" >&2
+  exit 1
+fi
+CHROMIUM_VERSION="$(echo "$CHROMIUM_VERSION" | sed 's/^Chromium //' | tr -d ' ')"
+
+VERSION_TAG="${CHROMIUM_VERSION}-${APP_SHORTHASH}-${SELF_SHORTHASH}"
+
+docker tag "$IMAGE_NAME" "$DOCKER_REPO:$VERSION_TAG"
+docker push "$DOCKER_REPO:$VERSION_TAG"
