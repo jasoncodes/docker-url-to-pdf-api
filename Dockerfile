@@ -12,7 +12,7 @@ RUN \
   apt-get update && \
   DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
     nodejs chromium\
-    fonts-freefont-ttf ttf-mscorefonts-installer && \
+    fonts-freefont-ttf ttf-mscorefonts-installer fonts-freefont-ttf fonts-liberation2 fonts-roboto && \
   apt --purge remove -y chromium && \
   setcap CAP_NET_BIND_SERVICE=+eip /usr/bin/node && \
   rm -rf /var/lib/apt/lists/* /var/cache/apt/archives/*
